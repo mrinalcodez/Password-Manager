@@ -116,12 +116,15 @@ app.get("/s", (req, res) => {
   </style>
 </head>
 <body>
-  <div id="vault-status">
-    <b>Please install the browser extension first.</b>
-  </div>
+  <!-- ALWAYS SHOW THIS (content script will overwrite) -->
+  <div id="vault-status"><b>Please install the browser extension first.</b></div>
+
+  <!-- No JavaScript! The extension injects all logic -->
 </body>
 </html>`);
 });
+
+
 
 
 // =========================================================

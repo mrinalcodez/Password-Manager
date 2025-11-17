@@ -335,7 +335,7 @@
 // Config / Globals
 // ========================================================
 
-const SHARE_API = "http://localhost:8443";
+const SHARE_API = "http://192.168.2.247:8443";
 let incomingSharedCred = null;
 
 // ========================================================
