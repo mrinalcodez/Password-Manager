@@ -281,9 +281,36 @@ function renderPasswords(folder, vault) {
     const masked = "•".repeat(entry.password.length);
     const display = extractDisplayHost(entry.loginUrl);
 
-    const text = document.createElement("span");
-    text.textContent = `${display} — ${masked}`;
-    row.appendChild(text);
+    const passwordSpan = document.createElement("span");
+    passwordSpan.textContent = `${display} — ${masked}`;
+    passwordSpan.style.flex = "1"; 
+    row.appendChild(passwordSpan);
+
+    // 👁 Toggle icon (using PNG)
+    const eyeBtn = document.createElement("img");
+    eyeBtn.src = "unhide.png";   // default icon (means: click to reveal)
+    eyeBtn.style.width = "20px";
+    eyeBtn.style.height = "20px";
+    eyeBtn.style.cursor = "pointer";
+    eyeBtn.style.marginLeft = "10px";
+
+    // Toggle state
+    let showing = false;
+
+    eyeBtn.onclick = () => {
+      showing = !showing;
+
+      if (showing) {
+        passwordSpan.textContent = `${display} — ${entry.password}`;
+        eyeBtn.src = "unhide.png";   // hide icon
+      } else {
+        passwordSpan.textContent = `${display} — ${masked}`;
+        eyeBtn.src = "hide.png"; // show icon
+      }
+    };
+
+    row.appendChild(eyeBtn);
+
 
     // -----------------------
     // Share button
@@ -360,52 +387,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   renderFolders(vault);
 });
 
-document.getElementById("addPasswordBtn").onclick = async () => {
-  const vault = await getVault();
-  if (!vault) return;
-
-  // Step 1: choose folder
-  const folders = Object.keys(vault.folders ?? {});
-  if (!folders.length) {
-    alert("Create a folder first!");
-    return;
-  }
-
-  const folder = prompt("Which folder? Available:\n" + folders.join(", "));
-  if (!folder || !vault.folders[folder]) {
-    alert("Invalid folder.");
-    return;
-  }
-
-  // Step 2: login URL
-  const loginUrl = prompt("Enter Login URL:");
-  if (!loginUrl) return;
-
-  // Step 3: username
-  const username = prompt("Enter Username:");
-  if (!username) return;
-
-  // Step 4: password
-  const password = prompt("Enter Password:");
-  if (!password) return;
-
-  // Create entry
-  const entry = {
-    loginUrl,
-    username,
-    password
-  };
-
-  // Save to folder
-  vault.folders[folder].push(entry);
-
-  // Save vault
-  await saveVault(vault);
-
-  // Refresh UI
-  renderFolders(vault);
-
-  alert("✅ Password saved!");
+document.getElementById("addPasswordBtn").onclick = () => {
+  window.location = "add_password.html";
 };
 
 

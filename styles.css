@@ -73,3 +73,30 @@ button:hover {
   border-radius: 4px;
   border: 1px solid #ddd;
 }
+
+.password-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.password-wrapper input {
+  width: 100%;
+  padding-right: 34px !important; /* ← THIS FIXES EVERYTHING */
+}
+
+.toggle-eye {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 18px;
+  opacity: 0.6;
+  user-select: none;
+  z-index: 10;  /* ← This is CRITICAL */
+}
+
+.toggle-eye:hover {
+  opacity: 1;
+}
+

@@ -307,13 +307,16 @@ function watchInputs() {
   const pass = document.querySelector('input[type="password"]');
   if (!pass) return;
 
-  const form = pass.form || pass.closest("form");
-  const user = form?.querySelector(
+  // FIX 1: GitHub-safe username detection (document-wide, not just form)
+  const user = document.querySelector(
+    '#login_field,' +                    // GitHub username field
+    'input[name="login"],' +             // GitHub name="login"
     'input[type="email"],' +
     'input[name*="user"], input[id*="user"],' +
     'input[name*="login"], input[id*="login"],' +
     'input[name*="email"], input[id*="email"],' +
-    'input[name*="username"], input[id*="username"]'
+    'input[name*="username"], input[id*="username"],' +
+    'input[type="text"]'                 // Fallback for generic username fields
   );
 
   function capture() {
@@ -324,12 +327,26 @@ function watchInputs() {
     };
   }
 
+  // ORIGINAL (kept): detect typing via keydown
   pass.addEventListener("keydown", () => (typedPassword = true), true);
   user?.addEventListener("keydown", () => (typedUsername = true), true);
 
+  // FIX 2: detect typing/paste/autofill/mobile keyboard via input event
+  pass.addEventListener("input", () => {
+    typedPassword = true;
+    capture();
+  }, true);
+
+  user?.addEventListener("input", () => {
+    typedUsername = true;
+    capture();
+  }, true);
+
+  // ORIGINAL (kept): capture on input
   pass.addEventListener("input", capture, true);
   user?.addEventListener("input", capture, true);
 }
+
 
 function shouldSave() {
   return lastLoginData?.password && typedPassword;
@@ -346,7 +363,8 @@ document.addEventListener("submit", () => {
 }, true);
 
 document.addEventListener("click", (e) => {
-  if (!e.target.closest("button, input[type=submit]")) return;
+  const btn = e.target.closest("button, input[type=submit], [type=submit]");
+  if (!btn) return;
   setTimeout(() => {
     if (shouldSave()) {
       log("Click submit → capturedLogin");
@@ -363,7 +381,7 @@ watchInputs();
 
 
 // ============================================================
-// ✅ 3) ONE-TIME SHARE AUTOFILL
+// 🔁 Robust One-Time Share Autofill (SPA + React + Instagram Safe)
 // ============================================================
 (async function handleSharedCredential() {
   async function getSharedCredWithRetry(totalMs = 8000, intervalMs = 300) {
@@ -388,115 +406,163 @@ watchInputs();
 
   const cred = await getSharedCredWithRetry();
   if (!cred) {
-    log("No shared credential for this tab.");
+    log("[VaultCS] No shared credential for this tab.");
     return;
   }
 
-  log("Autofill credential received →", cred.loginUrl);
+  log("[VaultCS] Autofill credential received:", cred.loginUrl);
 
+  // Visibility check
   const isVisible = (el) => {
     if (!el) return false;
     const r = el.getBoundingClientRect();
     if (!r || r.width === 0 || r.height === 0) return false;
     const s = getComputedStyle(el);
-    return s.display !== "none" && s.visibility !== "hidden";
+    return s.display !== "none" && s.visibility !== "hidden" && s.opacity !== "0";
   };
 
-  const findPasswordField = () => {
-    const pw = [...document.querySelectorAll('input[type="password"]')];
-    return pw.find(isVisible) || pw[0] || null;
-  };
-
-  const findUsernameField = (form) => {
-    const selectors = [
-      'input[autocomplete="username"]',
-      'input[type="email"]',
-      'input[name="username"]',
-      'input[name="email"]',
-      'input[id*="user"]',
-      'input[name*="user"]',
-      'input[id*="login"]',
-      'input[name*="login"]',
-    ];
-    for (const s of selectors) {
-      const el = form.querySelector(s);
-      if (el && isVisible(el)) return el;
-    }
-    return [...form.querySelectorAll("input")].find(i => {
-      const t = i.type?.toLowerCase();
-      return ["text", "email", "tel"].includes(t) && isVisible(i);
-    });
-  };
-
-  const fillField = (el, value) => {
-    if (!el) return;
-    el.focus({ preventScroll: true });
-    el.value = value;
-    el.dispatchEvent(new Event("input", { bubbles: true }));
-    el.dispatchEvent(new Event("change", { bubbles: true }));
-  };
-
+  // Host check
   const hostMatches = () => {
     try {
       const t = new URL(cred.loginUrl).hostname.replace(/^www\./, "").toLowerCase();
       const c = location.hostname.replace(/^www\./, "").toLowerCase();
       const ok = c === t || c.endsWith("." + t);
-      if (!ok) log("Host mismatch:", c, "!=", t);
+      if (!ok) log("[VaultCS] Host mismatch:", c, "!=", t);
       return ok;
     } catch {
       return true;
     }
   };
 
-  function attemptFill() {
-    if (!hostMatches()) return false;
+  if (!hostMatches()) return;
 
+  // ------------------------------------------------------------
+  // FINDING USERNAME + PASSWORD INPUTS
+  // ------------------------------------------------------------
+
+  const findPasswordField = () => {
+    const selectors = [
+      'input[type="password"]',
+      'input[name="password"]',
+      'input[aria-label*="Password" i]',
+    ];
+    for (const sel of selectors) {
+      const el = document.querySelector(sel);
+      if (el && isVisible(el) && document.contains(el)) return el;
+    }
+    return null;
+  };
+
+  const findUsernameField = () => {
+    const selectors = [
+      'input[autocomplete="username"]',
+      'input[name="username"]',
+      'input[id*="user"]',
+      'input[name*="user"]',
+      'input[placeholder*="username" i]',
+      'input[placeholder*="email" i]',
+      'input[aria-label*="username" i]',
+      'input[aria-label*="email" i]',
+      'input[type="text"]',
+      'input[type="email"]'
+    ];
+    for (const sel of selectors) {
+      const el = document.querySelector(sel);
+      if (el && isVisible(el) && document.contains(el)) return el;
+    }
+    return null;
+  };
+
+  // ------------------------------------------------------------
+  // NATIVE SETTER BASED FILL (WORKS ON REACT/SPA SITES)
+  // ------------------------------------------------------------
+  function fillField(el, value) {
+    if (!el || value == null) return false;
+
+    try {
+      const prototype = Object.getPrototypeOf(el);
+      const setter = Object.getOwnPropertyDescriptor(prototype, "value").set;
+
+      setter.call(el, value); // <-- THIS is the key part
+
+      el.dispatchEvent(new Event("input", { bubbles: true }));
+      el.dispatchEvent(new Event("change", { bubbles: true }));
+
+      return true;
+    } catch (e) {
+      log("[VaultCS] fillField error:", e);
+      return false;
+    }
+  }
+
+  // ------------------------------------------------------------
+  // USER TYPING PROTECTION
+  // ------------------------------------------------------------
+  const userTyped = new WeakSet();
+
+  function attachTypingGuard(el) {
+    if (!el || userTyped.has(el)) return;
+    const handler = () => {
+      userTyped.add(el);
+      el.removeEventListener("keydown", handler, true);
+      el.removeEventListener("input", handler, true);
+    };
+    el.addEventListener("keydown", handler, true);
+    el.addEventListener("input", handler, true);
+  }
+
+  // ------------------------------------------------------------
+  // ATTEMPT FILL — SAFE, DEBOUNCED, MULTI-RERENDER AWARE
+  // ------------------------------------------------------------
+  function attemptFill() {
+    const user = findUsernameField();
     const pass = findPasswordField();
+
     if (!pass) return false;
 
-    const form = pass.form || pass.closest("form") || document;
-    const user = findUsernameField(form);
+    let didSomething = false;
 
-    if (user) fillField(user, cred.username);
-    fillField(pass, cred.password);
-
-    log("Autofill complete.");
-    return true;
-  }
-
-  const MAX_WAIT = 12000;
-  const POLL_INTERVAL = 300;
-  const start = Date.now();
-  let filled = false;
-
-  while (Date.now() - start < MAX_WAIT) {
-    if (attemptFill()) {
-      filled = true;
-      break;
+    if (user && !userTyped.has(user)) {
+      if (fillField(user, cred.username)) didSomething = true;
+      attachTypingGuard(user);
     }
-    await new Promise(r => setTimeout(r, POLL_INTERVAL));
+
+    if (!userTyped.has(pass)) {
+      if (fillField(pass, cred.password)) didSomething = true;
+      attachTypingGuard(pass);
+    }
+
+    if (didSomething && !window.__VAULT_SHARED_CRED_USED) {
+      window.__VAULT_SHARED_CRED_USED = true;
+      chrome.runtime.sendMessage({ action: "SHARE_CRED_USED" }, () => {});
+      log("[VaultCS] Autofill applied.");
+    }
+
+    return didSomething;
   }
 
-  if (!filled) {
-    log("Using MutationObserver fallback…");
-    await new Promise((resolve) => {
-      const obs = new MutationObserver(() => {
-        if (attemptFill()) {
-          obs.disconnect();
-          resolve();
-        }
-      });
-      obs.observe(document, { childList: true, subtree: true });
+  // ------------------------------------------------------------
+  // PERSISTENT WATCHERS (REACT HYDRATION SAFE)
+  // ------------------------------------------------------------
 
-      setTimeout(() => {
-        obs.disconnect();
-        resolve();
-      }, 8000);
-    });
-  }
+  // MutationObserver — catches re-renders
+  const observer = new MutationObserver(() => attemptFill());
+  observer.observe(document, { childList: true, subtree: true });
 
-  chrome.runtime.sendMessage({ action: "SHARE_CRED_USED" }, () => {});
+  // Interval backup — catches missed frames
+  const interval = setInterval(attemptFill, 400);
+
+  // Initial attempt
+  attemptFill();
+
+  window.addEventListener("pagehide", () => {
+    observer.disconnect();
+    clearInterval(interval);
+  }, { once: true });
+
 })();
+
+
 
 
 

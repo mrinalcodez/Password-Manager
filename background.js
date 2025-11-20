@@ -524,7 +524,7 @@ chrome.runtime.onMessage.addListener(async (msg, sender, sendResponse) => {
   let exists = false;
   for (const folder of Object.keys(vault.folders ?? {})) {
     const match = vault.folders[folder]?.find(e =>
-      (e.site ?? "").toLowerCase() === (newLogin.site ?? "").toLowerCase() &&
+      (e.loginUrl ?? "").toLowerCase() === (newLogin.loginUrl ?? "").toLowerCase() &&
       (e.username ?? "").toLowerCase() === (newLogin.username ?? "").toLowerCase() &&
       (e.password ?? "") === (newLogin.password ?? "")
     );

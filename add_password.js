@@ -29,6 +29,23 @@ document.addEventListener("DOMContentLoaded", async () => {
     folderSelect.appendChild(opt);
   });
 
+  const passInput = document.getElementById("passwordInput");
+  const togglePassword = document.getElementById("togglePassword");
+
+  const eyeShow = document.getElementById("eyeShow");
+  const eyeHide = document.getElementById("eyeHide");
+
+  togglePassword.addEventListener("click", () => {
+    const isHidden = passInput.type === "password";
+
+    passInput.type = isHidden ? "text" : "password";
+
+    eyeShow.style.display = isHidden ? "none" : "block";
+    eyeHide.style.display = isHidden ? "block" : "none";
+  });
+
+
+
   // Save button
   document.getElementById("savePasswordBtn").onclick = async () => {
     const folder = folderSelect.value;
