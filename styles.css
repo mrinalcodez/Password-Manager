@@ -1,0 +1,102 @@
+body {
+  font-family: Arial, sans-serif;
+  width: 350px;
+  padding: 15px;
+  background: #f7f7f7;
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+  box-sizing: border-box;
+  font-size: 14px;
+}
+
+button {
+  width: 100%;
+  padding: 10px;
+  font-size: 14px;
+  margin-top: 8px;
+  cursor: pointer;
+  border: none;
+  background: #4CAF50;
+  color: white;
+  border-radius: 4px;
+}
+
+button:hover {
+  background: #45a049;
+}
+
+#message {
+  margin-top: 8px;
+  font-size: 13px;
+  text-align: center;
+  color: red;
+}
+
+#folders {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 15px;
+}
+
+#folders button {
+  width: auto;
+  padding: 6px 10px;
+  background: #1976d2;
+}
+
+#folders button:hover {
+  background: #125aa4;
+}
+
+#newFolderBtn {
+  background: #ff9800;
+}
+
+#newFolderBtn:hover {
+  background: #e58800;
+}
+
+#passwordList div {
+  background: white;
+  padding: 8px;
+  margin: 5px 0;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
+
+.password-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.password-wrapper input {
+  width: 100%;
+  padding-right: 34px !important; /* ← THIS FIXES EVERYTHING */
+}
+
+.toggle-eye {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 18px;
+  opacity: 0.6;
+  user-select: none;
+  z-index: 10;  /* ← This is CRITICAL */
+}
+
+.toggle-eye:hover {
+  opacity: 1;
+}
+

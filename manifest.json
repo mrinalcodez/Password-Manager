@@ -1,0 +1,53 @@
+{
+  "manifest_version": 3,
+  "name": "My Password Vault",
+  "version": "1.0",
+  "description": "Password vault with folders + right-click autofill",
+
+  "permissions": [
+    "storage",
+    "activeTab",
+    "scripting",
+    "contextMenus",
+    "tabs"
+  ],
+
+  "host_permissions": [
+    "http://192.168.2.247:8443/"
+  ],
+
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+
+  "action": {
+    "default_popup": "login.html",
+    "default_title": "Password Vault"
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "all_frames": true,
+      "match_about_blank": true,
+      "js": ["content.js"],
+      "run_at": "document_start"
+    }
+  ],
+
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "vault.html",
+        "login.html",
+        "save_prompt.html"
+      ],
+      "matches": ["<all_urls>"]
+    }
+  ],
+
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self';"
+  }
+}
