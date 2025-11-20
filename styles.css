@@ -1,4 +1,4 @@
-body {
+/* body {
   font-family: Arial, sans-serif;
   width: 350px;
   padding: 15px;
@@ -81,7 +81,7 @@ button:hover {
 
 .password-wrapper input {
   width: 100%;
-  padding-right: 34px !important; /* ← THIS FIXES EVERYTHING */
+  padding-right: 34px !important; 
 }
 
 .toggle-eye {
@@ -93,10 +93,370 @@ button:hover {
   font-size: 18px;
   opacity: 0.6;
   user-select: none;
-  z-index: 10;  /* ← This is CRITICAL */
+  z-index: 10;  
 }
 
 .toggle-eye:hover {
   opacity: 1;
 }
 
+
+ */
+
+
+ /* styles.css */
+
+/* 1. Global Reset & Variables */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --primary: #6366f1; /* Modern Indigo */
+  --primary-hover: #4f46e5;
+  --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --card-bg: #ffffff;
+  --text-main: #1f2937;
+  --text-muted: #6b7280;
+  --border: #e5e7eb;
+  --focus-ring: rgba(99, 102, 241, 0.25);
+  --danger-bg: #fef2f2;
+  --danger-text: #991b1b;
+  --radius: 12px;
+}
+
+/* 2. Body & Layout - Optimized for Popup */
+html {
+  height: auto; 
+  /* Helps text rendering on small screens */
+  -webkit-font-smoothing: antialiased; 
+}
+
+body {
+  /* FIXED WIDTH is crucial for extensions to prevent resizing jitters */
+  width: 360px; 
+  min-height: 500px; 
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: var(--bg-gradient);
+  color: var(--text-main);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow-x: hidden; /* Prevent horizontal scroll */
+}
+
+/* 3. Custom Scrollbar (Vital for small popups) */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* 4. Background Decor (Subtle) */
+body::before {
+  content: ''; position: absolute; top: -50px; right: -50px;
+  width: 200px; height: 200px; border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1); pointer-events: none;
+}
+
+/* 5. Container & Header */
+.container {
+  width: 100%;
+  padding: 20px;
+  z-index: 2;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 16px;
+  color: white;
+}
+
+.title {
+  font-size: 1.25rem; /* 20px */
+  font-weight: 700;
+  margin-bottom: 4px;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.subtitle {
+  font-size: 0.85rem;
+  opacity: 0.9;
+  font-weight: 400;
+}
+
+/* 6. Card Styling */
+.login-card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* 7. Inputs & Forms */
+.input-group { margin-bottom: 14px; }
+
+.input-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-main);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.password-wrapper { position: relative; }
+
+.input-field {
+  width: 100%;
+  height: 42px; /* Standard touch/click target */
+  padding: 0 12px;
+  padding-right: 40px; /* Space for eye icon */
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  background: #f9fafb; /* Very light gray bg */
+}
+
+.input-field:focus {
+  background: #fff;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--focus-ring);
+  outline: none;
+}
+
+.input-field::placeholder { color: #9ca3af; }
+
+.toggle-eye {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9ca3af;
+  cursor: pointer;
+  padding: 4px; /* Increase click area */
+}
+.toggle-eye:hover { color: var(--text-main); }
+
+/* 8. Buttons (Primary & Secondary) */
+.button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+button {
+  width: 100%;
+  height: 40px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  border: none;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.primary-btn, #loginBtn {
+  background: var(--primary);
+  color: white;
+  box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2);
+}
+
+.primary-btn:hover, #loginBtn:hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+}
+
+.primary-btn:active, #loginBtn:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+.secondary-btn, #createBtn {
+  background: white;
+  color: var(--text-main);
+  border: 1px solid var(--border);
+}
+
+.secondary-btn:hover, #createBtn:hover {
+  background: #f9fafb;
+  border-color: #d1d5db;
+}
+
+/* 9. Links & Messages */
+.forgot-link {
+  display: block;
+  text-align: center;
+  margin-top: 12px;
+  font-size: 0.8rem;
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 500;
+}
+.forgot-link:hover { text-decoration: underline; }
+
+.message-text {
+  margin-top: 12px;
+  padding: 8px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  text-align: center;
+  background: var(--danger-bg);
+  color: var(--danger-text);
+  display: none; /* Hidden by default */
+}
+.message-text:not(:empty) { display: block; animation: shake 0.3s ease-in-out; }
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+/* 10. Folder & Password List (Compact & Clean) */
+#folders { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+
+#folders button {
+  width: auto;
+  height: 28px;
+  padding: 0 12px;
+  font-size: 0.75rem;
+  background: rgba(255,255,255,0.2);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.3);
+  box-shadow: none;
+}
+#folders button:hover { background: rgba(255,255,255,0.3); }
+
+#passwordList div {
+  background: white;
+  padding: 12px;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: border-color 0.15s;
+  cursor: pointer;
+}
+
+#passwordList div:hover {
+  border-color: var(--primary);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+#warning-message {
+  color: red;
+}
+
+
+/* Loading State */
+.loading { opacity: 0.7; pointer-events: none; position: relative; }
+.loading::after {
+  content: ''; width: 16px; height: 16px;
+  border: 2px solid #ffffff; border-top-color: transparent;
+  border-radius: 50%; position: absolute;
+  animation: spin 0.8s linear infinite;
+}
+
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* =========================================
+   ADD THIS TO THE BOTTOM OF STYLES.CSS
+   TO FIX THE UI CLUTTER WITHOUT TOUCHING JS
+   ========================================= */
+
+/* 1. FIX THE FOLDERS (Make them small chips) */
+#folders {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+/* Target specifically the buttons inside the folders div */
+#folders button {
+  width: auto !important;        /* FORCE small width */
+  flex-grow: 0;
+  padding: 5px 12px;
+  font-size: 0.75rem;
+  border-radius: 20px;           /* Pill shape */
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #e5e7eb;
+  box-shadow: none;
+  margin: 0;                     /* Remove default margins */
+}
+
+#folders button:hover {
+  background: #e5e7eb;
+  color: black;
+}
+
+/* 2. FIX THE PASSWORD LIST LAYOUT */
+#passwordList {
+  max-height: 220px;             /* Add scrolling */
+  overflow-y: auto;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #fff;
+  margin-bottom: 15px;
+}
+
+/* Target the rows created by JS */
+#passwordList > div {
+  display: flex !important;      /* Force horizontal layout */
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 10px;
+  border-bottom: 1px solid #f3f4f6;
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+/* 3. FIX THE GIANT BUTTONS INSIDE PASSWORD LIST */
+/* This is the most important part to fix your screenshot issue */
+#passwordList button {
+  width: auto !important;        /* CRITICAL: Stop them from being huge */
+  height: 28px !important;       /* Fixed small height */
+  padding: 0 10px !important;
+  font-size: 0.7rem !important;
+  margin-left: 8px;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 4px;
+}
+
+/* Optional: Style the delete button specifically if your JS adds a delete class, 
+   otherwise this targets the second button (usually delete) */
+#passwordList button:last-child {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+#passwordList button:first-child {
+  background: #e0e7ff;
+  color: #4338ca;
+  border: 1px solid #c7d2fe;
+}

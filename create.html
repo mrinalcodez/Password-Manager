@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html>
 <head>
   <title>Create Vault</title>
@@ -17,5 +17,119 @@
   <button id="backBtn">Back</button>
 
   <script type="module" src="create.js"></script>
+</body>
+</html> -->
+
+
+<!-- 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create Vault</title>
+    <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+    <div class="container">
+
+        <header class="header">
+            <h2 class="title">Create New Vault</h2>
+            
+        </header>
+
+        <main class="form-area">
+
+            <div class="input-group">
+                <label for="master1" class="input-label">Master Password</label>
+                <input 
+                    id="master1" 
+                    type="password" 
+                    placeholder="Enter master password" 
+                    class="input-field"
+                />
+            </div>
+
+            <div class="input-group">
+                <label for="master2" class="input-label">Confirm Password</label>
+                <input 
+                    id="master2" 
+                    type="password" 
+                    placeholder="Re-enter master password" 
+                    class="input-field"
+                />
+            </div>
+
+            <p id="strength" class="strength-text"></p>
+            <p id="msg" class="message-text"></p>
+
+            <div class="button-group">
+                <button id="createVaultBtn" class="primary-btn">Create Vault</button>
+                <button id="backBtn" class="secondary-btn">Back</button>
+            </div>
+
+        </main>
+    </div>
+
+    <script type="module" src="create.js"></script>
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create Vault</title>
+    <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+    <div class="container">
+
+        <div class="header">
+            <h2 class="title">Setup Vault</h2>
+            <p class="subtitle">Set a master password to secure your data</p>
+        </div>
+
+        <div class="login-card">
+
+            <div class="input-group">
+                <label for="master1" class="input-label">Master Password</label>
+                <div class="password-wrapper">
+                    <input 
+                        id="master1" 
+                        type="password" 
+                        placeholder="Enter a strong password" 
+                        class="input-field"
+                    />
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="master2" class="input-label">Confirm Password</label>
+                <div class="password-wrapper">
+                    <input 
+                        id="master2" 
+                        type="password" 
+                        placeholder="Re-enter password" 
+                        class="input-field"
+                    />
+                </div>
+                <p id="strength" class="strength-text"></p>
+            </div>
+
+            <div id="msg" class="message-text"></div>
+
+            <div class="button-group">
+                <button id="createVaultBtn" class="primary-btn">Create Vault</button>
+                <button id="backBtn" class="secondary-btn">Back</button>
+            </div>
+
+        </div>
+    </div>
+
+    <script type="module" src="create.js"></script>
 </body>
 </html>

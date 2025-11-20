@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html>
 <head>
   <title>Vault</title>
@@ -18,4 +18,142 @@
 
   <script type="module" src="vault.js"></script>
 </body>
+</html> -->
+
+ <!-- Revised HTML structure with improved semantics and styling -->
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vault</title>
+    <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+    <header class="header">
+        <h2 class="title">Your Vault</h2>
+    </header>
+
+    <main class="content">
+        <section class="folders-section">
+            <h3 class="section-title">Folders</h3>
+            <div id="folders" class="folders-container"></div>
+
+            <div class="folder-actions">
+                <button id="newFolderBtn" class="secondary-btn">+ Add Folder</button>
+            </div>
+        </section>
+
+        <section class="passwords-section">
+            <h3 class="section-title">Passwords</h3>
+            <div id="passwordList" class="password-list"></div>
+
+            <div class="password-actions">
+                <button id="addPasswordBtn" class="primary-btn">+ Add Password</button>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <button id="logout" class="logout-btn">Logout</button>
+    </footer>
+
+    <script type="module" src="vault.js"></script>
+</body>
+</html> -->
+
+<!-- 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vault</title>
+    <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+    <header class="header">
+        <h2 class="title">Your Vault</h2>
+    </header>
+
+    <main class="content">
+        <section class="folders-section">
+            <h3 class="section-title">Folders</h3>
+            <div id="folders" class="folders-container"></div>
+
+            <div class="folder-actions">
+                <button id="newFolderBtn" class="secondary-btn">+ Add Folder</button>
+            </div>
+        </section>
+
+        <section class="passwords-section">
+            <h3 class="section-title">Passwords</h3>
+            <div id="passwordList" class="password-list"></div>
+
+            <div class="password-actions">
+                <button id="addPasswordBtn" class="primary-btn">+ Add Password</button>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <button id="logout" class="logout-btn">Logout</button>
+    </footer>
+
+    <script type="module" src="vault.js"></script>
+</body>
+</html> -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Vault</title>
+    <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+    <div class="container">
+
+        <div class="header" style="margin-bottom: 10px;">
+            <h2 class="title" style="font-size: 1.1rem;">Your Vault</h2>
+        </div>
+
+        <div class="login-card" style="padding: 16px;">
+            
+            <div class="section-header">
+                <label class="input-label">Folders</label>
+                <button id="newFolderBtn" class="primary-btn" title="Add Folder">+Add Folder</button>
+            </div>
+            
+            <div id="folders" class="chips-container"></div>
+
+            <div class="divider"></div>
+
+            <div class="section-header">
+                <label class="input-label">Passwords</label>
+            </div>
+
+            <div id="passwordList" class="scrollable-list"></div>
+
+            <div style="margin-top: 12px;">
+                <button id="addPasswordBtn" class="primary-btn compact-btn">+ Add Password</button>
+            </div>
+
+        </div>
+
+        <div class="footer-actions">
+            <button id="logout" class="text-btn">Log Out</button>
+        </div>
+
+    </div>
+
+    <script type="module" src="vault.js"></script>
+</body>
 </html>
+

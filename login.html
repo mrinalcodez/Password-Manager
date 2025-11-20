@@ -1,25 +1,50 @@
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Login - Vault</title>
-  <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - Vault</title>
+    <link rel="stylesheet" href="styles.css" />
 </head>
+
 <body>
-  <h2>Password Vault</h2>
+    <div class="container">
+        <header class="header">
+            <h1 class="title">Password Vault</h1>
+            <p class="subtitle">Securely access your encrypted password vault</p>
+        </header>
 
-  <div id="login-box">
-    <input id="masterInput" type="password" placeholder="Master Password">
-    
-    <button id="loginBtn">Unlock Vault</button>
-    <button id="createBtn">Create New Vault</button>
-    <p id="forgotPw" style="text-align:center; margin-top:10px; cursor:pointer; color:#1976d2;">
-      Forgot Password?
-    </p>
+        <main>
+            <div id="login-box" class="login-card">
+                
+                <div class="input-group">
+                    <label for="masterInput" class="input-label">Master Password</label>
+                    <input 
+                        id="masterInput" 
+                        type="password" 
+                        placeholder="Enter your master password" 
+                        class="input-field"
+                    />
+                </div>
 
+                <div class="button-group">
+                    <button id="loginBtn" class="primary-btn">Unlock Vault</button>
+                    <button id="createBtn" class="secondary-btn">Create New Vault</button>
+                </div>
 
-    <p id="message"></p>
-  </div>
+                <p 
+                    id="forgotPw" 
+                    class="forgot-link"
+                    style="cursor:pointer;">
+                    Forgot Password?
+                </p>
 
-  <script type="module" src="login.js"></script>
+                <p id="message" class="message-text"></p>
+            </div>
+        </main>
+    </div>
+
+    <script type="module" src="login.js"></script>
 </body>
 </html>
