@@ -5,11 +5,13 @@
   "description": "Password vault with folders + right-click autofill",
 
   "permissions": [
+    "nativeMessaging",
     "storage",
     "activeTab",
     "scripting",
     "contextMenus",
-    "tabs"
+    "tabs",
+    "alarms"
   ],
 
   "host_permissions": [

@@ -4,6 +4,7 @@
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "helmet": "^8.1.0",
-    "nanoid": "^5.1.6"
+    "nanoid": "^5.1.6",
+    "selenium-webdriver": "^4.38.0"
   }
 }

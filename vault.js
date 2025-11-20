@@ -391,6 +391,15 @@ document.getElementById("addPasswordBtn").onclick = () => {
   window.location = "add_password.html";
 };
 
+document.addEventListener("DOMContentLoaded", () => {
+  chrome.runtime.sendMessage({ action: "VAULT_OPENED" });
+});
+
+window.addEventListener("unload", () => {
+  chrome.runtime.sendMessage({ action: "VAULT_CLOSED" });
+});
+
+
 
 // ==========================================================
 // ✅ SERVER SHARE CREATION

@@ -331,12 +331,77 @@
 // });
 
 
+
+import { saveEncryptedVault } from "./vault_core.js";
+
 // ========================================================
 // Config / Globals
 // ========================================================
 
 const SHARE_API = "http://192.168.2.247:8443";
 let incomingSharedCred = null;
+
+
+chrome.alarms.onAlarm.addListener(async (alarm) => {
+  if (alarm.name === "vaultAutoLogout") {
+    console.log("[BG] Auto logout alarm fired.");
+
+    const { logoutAt } = await chrome.storage.session.get("logoutAt");
+
+    if (!logoutAt) return;
+
+    if (Date.now() >= logoutAt) {
+      await forceLogout();
+    }
+  }
+});
+
+async function startLogoutCountdown() {
+  console.log("[BG] Countdown started");
+
+  const logoutAt = Date.now() + 2 * 60 * 1000;
+
+  await chrome.storage.session.set({ logoutAt });
+
+  // create alarm
+  chrome.alarms.create("vaultAutoLogout", {
+    when: logoutAt,
+  });
+}
+
+async function stopLogoutCountdown() {
+  console.log("[BG] Countdown stopped");
+
+  await chrome.storage.session.remove("logoutAt");
+  chrome.alarms.clear("vaultAutoLogout");
+}
+
+async function forceLogout() {
+  console.log("[BG] FORCE LOGOUT");
+
+  // save encrypted vault to local storage before logout
+  const { vaultCache } = await chrome.storage.session.get("vaultCache");
+  if (vaultCache) {
+    try {
+      const vault = JSON.parse(vaultCache);
+      await saveEncryptedVault(vault);
+    } catch (e) {
+      console.error("Failed to save vault:", e);
+    }
+  }
+
+  await chrome.storage.session.remove([
+    "vaultCache",
+    "vaultKey",
+    "pendingSave",
+    "logoutAt"
+  ]);
+
+  incomingSharedCred = null;
+
+  chrome.runtime.sendMessage({ action: "LOGGED_OUT" }).catch(() => {});
+}
+
 
 // ========================================================
 // Helpers
@@ -654,6 +719,35 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     sendResponse({ ok: true });
   }
 });
+
+chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+  if (msg.action === "LAUNCH_SELENIUM") {
+
+    chrome.runtime.sendNativeMessage("app", {
+      loginUrl: msg.loginUrl,
+      username: msg.username,
+      password: msg.password
+    }, response => {
+      console.log("Native response:", response);
+    });
+  }
+});
+
+chrome.runtime.onMessage.addListener((msg) => {
+  if (msg.action === "VAULT_OPENED") {
+    stopLogoutCountdown();
+    startLogoutCountdown();     // user activity
+  }
+
+  if (msg.action === "VAULT_CLOSED") {
+    startLogoutCountdown();     // popup closed → start timer
+  }
+});
+
+
+
+
+
 
 
 

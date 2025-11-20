@@ -64,7 +64,7 @@ async function unlockVault(masterPassword) {
 
     sessionStorage.setItem("vaultData", JSON.stringify(vault));
 
-    await chrome.storage.session.remove("vaultCache");          // ✅ NEW
+    await chrome.storage.session.remove("vaultCache");
     await chrome.storage.session.set({ vaultCache: JSON.stringify(vault) });
 
     const rawKey = await crypto.subtle.exportKey("raw", key);
