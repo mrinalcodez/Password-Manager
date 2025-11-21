@@ -31,3 +31,25 @@ The link can be used only once.
 It automatically expires after 5 minutes, ensuring passwords are not left exposed for long periods.
 This design balances convenience with strong security.
 4. Auto-Logout on Inactivity: To prevent unauthorized access during moments of physical absence—such as stepping away from the laptop—the extension includes an auto-logout mechanism.If the user is inactive for five minutes, the vault automatically locks itself, requiring re-authentication through the master password (and 2FA if enabled).
+
+How to run-
+🚀 Step-by-Step (Chrome)
+1) Open Chrome and go to:
+chrome://extensions/
+
+2) Turn ON -> Developer Mode
+You’ll see this at top-right
+
+3) Click -> Load Unpacked
+Then select your password-manager-extension folder.
+
+4) If everything is correct, you will see your extension appear in the list. Test the Extension
+5) Click the Extension Icon
+It should open your login.html popup.
+
+6) If no vault exists:
+Click Create New Vault
+
+8) Enter a master password → vault is created and saved
+
+9) Add folders and passwords
