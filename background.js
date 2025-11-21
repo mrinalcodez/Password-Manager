@@ -359,7 +359,7 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
 async function startLogoutCountdown() {
   console.log("[BG] Countdown started");
 
-  const logoutAt = Date.now() + 2 * 60 * 1000;
+  const logoutAt = Date.now() + 6 * 60 * 1000;
 
   await chrome.storage.session.set({ logoutAt });
 
@@ -666,23 +666,29 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       const r = await fetch(`${SHARE_API}/v1/redeem/${token}`);
       const data = await r.json().catch(() => ({}));
 
+      // ❌ Link expired or invalid
       if (!data.ok) {
         sendResponse({ ok: false, error: data.error });
+        incomingSharedCred = null;     // just to be safe
         return;
       }
 
+      // ✅ Store incoming credentials for content.js
       incomingSharedCred = {
         loginUrl: data.loginUrl,
         username: data.username,
         password: data.password
       };
 
-      chrome.tabs.create({ url: data.loginUrl });
+      // ❌ REMOVE: no redirect
+      // chrome.tabs.create({ url: data.loginUrl });
 
       sendResponse({ ok: true });
 
-      // wipe after 2 min
-      setTimeout(() => incomingSharedCred = null, 120000);
+      // auto-clear after 2 minutes
+      setTimeout(() => {
+        incomingSharedCred = null;
+      }, 120000);
 
     } catch (e) {
       sendResponse({ ok: false, error: e.message });
@@ -691,6 +697,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 
   return true;
 });
+
 
 // ========================================================
 // ✅ CONTENT → REQUEST_SHARED_CRED
@@ -718,6 +725,10 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   if (msg.action === "PING_FROM_LANDING") {
     sendResponse({ ok: true });
   }
+});
+
+chrome.runtime.onMessage.addListener((msg, sender) => {
+  console.log("[BG] Message received:", msg);
 });
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
