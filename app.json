@@ -1,0 +1,9 @@
+{
+  "name": "app",
+  "description": "VaultCS Python Launcher",
+  "path": "C:\\Users\\Lenovo\\Downloads\\Password Manager\\vaultcs_launcher.bat",
+  "type": "stdio",
+  "allowed_origins": [
+    "chrome-extension://ojnbhjiahgkipdmdjepbociikijdfkgc/"
+  ]
+}

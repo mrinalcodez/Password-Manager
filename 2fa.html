@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2FA Verification</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        
+        <div class="header">
+            <h2 class="title">Two-Factor Authentication</h2>
+            <p class="subtitle">Enter your email to receive a verification code</p>
+        </div>
+
+        <div class="login-card">
+            
+            <div class="input-group">
+                <label for="emailInput" class="input-label">Email Address</label>
+                <div class="password-wrapper">
+                    <input 
+                        id="emailInput" 
+                        type="email" 
+                        placeholder="name@example.com" 
+                        class="input-field" 
+                        autofocus
+                    >
+                </div>
+            </div>
+
+            <div id="msg" class="message-text"></div>
+
+            <div class="button-group">
+                <button id="submitEmailBtn" class="primary-btn">Send Code</button>
+            </div>
+
+        </div>
+
+        <div class="footer">
+            <button id="backBtn" class="logout-btn">Back to Login</button>
+        </div>
+
+    </div>
+
+    <script type="module" src="2fa.js"></script>
+</body>
+</html>

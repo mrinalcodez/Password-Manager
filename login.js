@@ -86,3 +86,8 @@ document.getElementById("loginBtn").onclick = async () => {
   if (!pw) return msg.textContent = "Enter password";
   if (await unlockVault(pw)) window.location = "vault.html";
 };
+
+document.getElementById("2FA").onclick = () => {
+  window.location = "2fa.html";
+};
+

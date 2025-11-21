@@ -756,6 +756,22 @@ chrome.runtime.onMessage.addListener((msg) => {
 });
 
 
+// =============================================
+// 2FA verification
+// =============================================
+chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+    if (msg.action !== "OTP_VERIFIED") return;
+
+    console.log("2FA successfully verified!");
+
+    // Example: mark user as verified
+    chrome.storage.local.set({ otpVerified: true });
+
+    sendResponse({ ok: true });
+});
+
+
+
 
 
 

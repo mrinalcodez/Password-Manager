@@ -6,14 +6,15 @@ import msvcrt
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 
-# REQUIRED ON WINDOWS: use binary mode for native messaging
+# Windows - required for native messaging
 msvcrt.setmode(sys.stdin.fileno(), os.O_BINARY)
 msvcrt.setmode(sys.stdout.fileno(), os.O_BINARY)
 
 
+# ----------------------------------------------------
+# Native messaging helpers
+# ----------------------------------------------------
 def read_native():
     raw_length = sys.stdin.buffer.read(4)
     if not raw_length:
@@ -34,20 +35,107 @@ def send_native(msg):
     sys.stdout.buffer.flush()
 
 
-# 🔥 Autofill + Auto-Login Selenium
+# ----------------------------------------------------
+# Click the correct login button
+# ----------------------------------------------------
+def force_enable(btn, driver):
+    try:
+        driver.execute_script("""
+            arguments[0].removeAttribute('disabled');
+            arguments[0].classList.remove('disabled');
+            arguments[0].removeAttribute('aria-disabled');
+            arguments[0].disabled = false;
+        """, btn)
+    except:
+        pass
+
+
+def click_login_button(driver, loginUrl):
+    # ------------------------------------------
+    # SPECIAL HANDLING: GitHub Login
+    # ------------------------------------------
+    if "github.com/login" in loginUrl:
+        try:
+            btn = driver.find_element(By.CSS_SELECTOR, "input[name='commit']")
+            force_enable(btn, driver)
+            btn.click()
+            return True
+        except:
+            pass
+
+    # ------------------------------------------
+    # Generic login submit buttons
+    # ------------------------------------------
+    selectors = [
+        "input[type='submit']",
+        "button[type='submit']",
+        "button[role='button']",
+
+        # Common labels
+        "button[id*='login']",
+        "button[class*='login']",
+        "button[name*='login']",
+
+        "button[id*='sign']",
+        "button[class*='sign']",
+        "button[name*='sign']",
+
+        "input[value*='Sign']",
+        "input[value*='Log']",
+        "button[value*='Sign']",
+        "button[value*='Log']",
+    ]
+
+    for selector in selectors:
+        try:
+            buttons = driver.find_elements(By.CSS_SELECTOR, selector)
+            for btn in buttons:
+                if not btn.is_displayed():
+                    continue
+
+                # REMOVES disabled states forcefully 👇
+                force_enable(btn, driver)
+
+                # Try clicking
+                try:
+                    btn.click()
+                    return True
+                except:
+                    pass
+        except:
+            continue
+
+    # ------------------------------------------
+    # HARD FALLBACK — FORCE CLICK VIA JS
+    # ------------------------------------------
+    try:
+        pw = driver.find_element(By.CSS_SELECTOR, "input[type='password']")
+        driver.execute_script("arguments[0].dispatchEvent(new KeyboardEvent('keydown', {'key':'Enter'}));", pw)
+        driver.execute_script("arguments[0].dispatchEvent(new KeyboardEvent('keyup', {'key':'Enter'}));", pw)
+        pw.send_keys(Keys.ENTER)
+        return True
+    except:
+        pass
+
+    return False
+
+
+# ----------------------------------------------------
+# Autofill Login with Selenium
+# ----------------------------------------------------
 def run_selenium(loginUrl, username, password):
     try:
         options = webdriver.ChromeOptions()
-
-        # 100% private — no cookies or history
-        options.add_argument("--guest")  
+        options.add_argument("--guest")
         options.add_argument("--disable-blink-features=AutomationControlled")
 
         driver = webdriver.Chrome(options=options)
         driver.get(loginUrl)
+        time.sleep(2)
 
-        time.sleep(2)  # wait for page load
-
+        # -------------------------------------------------------------------
+        # Detect fields
+        # -------------------------------------------------------------------
         inputs = driver.find_elements(By.CSS_SELECTOR, "input")
 
         user_field = None
@@ -63,11 +151,14 @@ def run_selenium(loginUrl, username, password):
 
             if t == "password":
                 pass_field = el
+                continue
 
+            # username heuristics
             if (
                 not user_field
                 and t in ["text", "email"]
-                or "user" in name
+            ) or (
+                "user" in name
                 or "email" in name
                 or "login" in name
                 or "user" in placeholder
@@ -75,60 +166,39 @@ def run_selenium(loginUrl, username, password):
             ):
                 user_field = el
 
-        # Fill username
+        # -------------------------------------------------------------------
+        # Autofill username
+        # -------------------------------------------------------------------
         if user_field:
             user_field.click()
             user_field.send_keys(Keys.CONTROL, "a")
             user_field.send_keys(username)
-            time.sleep(0.3)
+            time.sleep(0.2)
 
-        # Fill password
+        # Autofill password
         if pass_field:
             pass_field.click()
             pass_field.send_keys(Keys.CONTROL, "a")
             pass_field.send_keys(password)
-            time.sleep(0.3)
+            time.sleep(0.2)
 
-        # 🔥 Auto-click login button
-        login_selectors = [
-            "button[type='submit']",
-            "input[type='submit']",
-            "button[name='login']",
-            "button[id*='login']",
-            "button[class*='login']",
-            "input[value*='Log']",
-            "button",  # fallback attempt
-        ]
+        # -------------------------------------------------------------------
+        # Click the correct login button
+        # -------------------------------------------------------------------
+        click_login_button(driver, loginUrl)
 
-        clicked = False
-        for selector in login_selectors:
-            try:
-                btn = driver.find_element(By.CSS_SELECTOR, selector)
-                if btn.is_displayed() and btn.is_enabled():
-                    btn.click()
-                    clicked = True
-                    break
-            except:
-                continue
+        # Wait for login to process
+        time.sleep(3)
 
-        if not clicked:
-            try:
-                # fallback: press Enter on password field
-                pass_field.send_keys(Keys.ENTER)
-            except:
-                pass
-
-        time.sleep(3)  # wait for login to complete
-
-        # Browser stays open
         return True
 
     except Exception as e:
         return str(e)
 
 
-
-# MAIN LOOP — persistent host
+# ----------------------------------------------------
+# MAIN LOOP — Native messaging persistent host
+# ----------------------------------------------------
 def main():
     while True:
         msg = read_native()
@@ -140,6 +210,7 @@ def main():
         username = msg.get("username")
         password = msg.get("password")
 
+        # Acknowledge receipt immediately
         send_native({"ok": True})
 
         result = run_selenium(loginUrl, username, password)

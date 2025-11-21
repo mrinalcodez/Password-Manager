@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify OTP</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        
+        <div class="header">
+            <h2 class="title">Verify OTP</h2>
+            <p class="subtitle">Enter the code sent to your email</p>
+        </div>
+
+        <div class="login-card">
+            
+            <div class="input-group">
+                <label for="otpInput" class="input-label">One-Time Password</label>
+                <div class="password-wrapper">
+                    <input 
+                        id="otpInput" 
+                        type="text" 
+                        placeholder="123456" 
+                        class="input-field otp-style" 
+                        maxlength="6"
+                        autofocus
+                    >
+                </div>
+            </div>
+
+            <div id="msg" class="message-text"></div>
+
+            <div class="button-group">
+                <button id="verifyBtn" class="primary-btn">Verify Code</button>
+            </div>
+
+        </div>
+
+        <div class="footer" style="display: flex; flex-direction: column; gap: 5px;">
+            <button id="resendBtn" class="logout-btn">Resend Code</button>
+            <button id="backBtn" class="logout-btn" style="opacity: 0.6;">Back</button>
+        </div>
+
+    </div>
+
+    <script type="module" src="verifyOTP.js"></script>
+</body>
+</html>
